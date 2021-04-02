@@ -24,7 +24,7 @@ for i in count(0):
     # Find the chess board corners
     # ret, corners = cv2.findChessboardCorners(gray, (9,6),None)
     cv2.imshow('img',img)
-    pressedKey = cv2.waitKey(1)
+    pressedKey = cv2.waitKey(0)
 
     # If found, add object points, image points (after refining them)
     if ret == True:
