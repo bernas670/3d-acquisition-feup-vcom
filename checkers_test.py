@@ -22,7 +22,7 @@ for i in count(0):
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     ret = False
     # Find the chess board corners
-    # ret, corners = cv2.findChessboardCorners(gray, (9,6),None)
+    ret, corners = cv2.findChessboardCorners(gray, (9,6),None)
     cv2.imshow('img',img)
     pressedKey = cv2.waitKey(0)
 
