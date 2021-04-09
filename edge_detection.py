@@ -72,6 +72,7 @@ while True:
         break
 
 cv.destroyAllWindows()
+cv.imwrite(os.path.join(data_dir, 'result.png'), res)
 
 # src = img
 # dst = morph
