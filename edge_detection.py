@@ -16,6 +16,7 @@ erode = 5
 img = cv.imread(os.path.join(data_dir, img_name), cv.IMREAD_GRAYSCALE)
 
 res = np.zeros_like(np.hstack((img, img, img)))
+final_res = np.zeros_like(img)
 
 
 def display():
@@ -23,11 +24,12 @@ def display():
 
 
 def apply():
-    global res
+    global res, final_res
     canny = cv.Canny(img, low_threshold, high_threshold, apertureSize=aperture)
     dil = cv.morphologyEx(canny, cv.MORPH_DILATE, np.ones((dilate, dilate)))
     ero = cv.morphologyEx(dil, cv.MORPH_ERODE, np.ones((erode, erode)))
     res = np.hstack((canny, dil, ero))
+    final_res = ero
 
 
 def on_low_threshold(v):
@@ -72,7 +74,8 @@ while True:
         break
 
 cv.destroyAllWindows()
-cv.imwrite(os.path.join(data_dir, 'result.png'), res)
+cv.imwrite(os.path.join(data_dir, 'result_{}_{}_{}_{}.png'.format(
+    low_threshold, high_threshold, dilate, erode)), final_res)
 
 # src = img
 # dst = morph
