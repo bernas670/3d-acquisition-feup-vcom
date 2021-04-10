@@ -7,9 +7,13 @@ import cv2
 # Calibration parameters
 CAPTURE_DEVICE = 0
 FRAME_COUNT = 20
-WAIT_PERIOD_MS = 5000
+WAIT_PERIOD_MS = 200
 CAMERA_ID = 'david'
-FRAME_FULL_PATH = path.join(path.abspath(''), 'data', 'calibration', CAMERA_ID)
+IS_INSTRINSIC = False
+SESSION_ID = '10-04-2021'
+TYPE = 'cube_original'
+PATH = path.join(path.abspath(''), 'data', 'calibration', CAMERA_ID)
+FRAME_FULL_PATH =  path.join(PATH, 'instrinsic') if IS_INSTRINSIC else path.join(PATH, SESSION_ID, TYPE) 
 captureDevice = cv2.VideoCapture(CAPTURE_DEVICE)
 
 ret, frame = captureDevice.read()
@@ -23,6 +27,6 @@ for currentFrameNumber in range(FRAME_COUNT):
     if pressedKey != -1 and chr(pressedKey) == 'q':
         break
 
-    cv2.imwrite(path.join(FRAME_FULL_PATH, f'calibration_frame_{datetime.now()}.png'), frame)
+    cv2.imwrite(path.join(FRAME_FULL_PATH, f'frame_{datetime.now()}.png'), frame)
 
 cv2.destroyAllWindows()

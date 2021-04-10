@@ -23,7 +23,7 @@ objp = np.zeros((CHESSBOARD_DIMENSIONS[0] * CHESSBOARD_DIMENSIONS[1],3), np.floa
 # TODO: check if this is the correct way to adjust the sizes. Used this accordint to: https://stackoverflow.com/questions/37310210/camera-calibration-with-opencv-how-to-adjust-chessboard-square-size
 objp[:,:2] = np.mgrid[0:CHESSBOARD_DIMENSIONS[0],0:CHESSBOARD_DIMENSIONS[1]].T.reshape(-1,2) * CHESSBOARD_SQUARE_LENGTH_MM
 
-
+objp[:, [1, 0]] = objp[:, [0, 1]]
 
 # Arrays to store object points and image points from all the images.
 objpoints = [] # 3d point in real world space
@@ -38,8 +38,10 @@ for fname in images:
 
   # Find the chess board corners
   ret, corners = cv2.findChessboardCorners(gray, CHESSBOARD_DIMENSIONS, None)
-
-  # If found, add object points, image points (after refining them)
+  # print(corners)
+  # cv2.imshow('image', img)
+  # cv2.waitKey()
+  # # If found, add object points, image points (after refining them)
   if ret == True:
     objpoints.append(objp)
 
@@ -76,7 +78,7 @@ def draw(img, corners, imgpts):
   img = cv2.line(img, corner, tuple(imgpts[2].ravel()), (0,0,255), 5)
   return img
 
-axis = np.float32([[3,0,0], [0,3,0], [0,0,-3]]).reshape(-1,3)
+axis = np.float32([[3,0,0], [0,3,0], [0,0,3]]).reshape(-1,3)
 
 captureDevice = cv2.VideoCapture(CAPTURE_DEVICE)
 
@@ -97,9 +99,12 @@ for currentFrameNumber in count(FRAME_COUNT):
     # project 3D points to image plane
     imgpts2, jac = cv2 .projectPoints(axis, rvecs, tvecs, mtx, dist)
     
-    imgpts, jact = cv2.projectPoints(np.float32([[0,0,2]]).reshape(-1,3), rvecs, tvecs, mtx, dist)
+    imgpts, jact = cv2.projectPoints(np.float32([[2,2,0], [-2,-2,0], [-2,0,0], [2, 2, 2]]).reshape(-1,3), rvecs, tvecs, mtx, dist)
 
     newimg = cv2.circle(frame, (imgpts[0][0][0], imgpts[0][0][1]), 5, (255, 0, 0), 5)
+    newimg = cv2.circle(newimg, (imgpts[1][0][0], imgpts[1][0][1]), 5, (255, 0, 0), 5)
+    newimg = cv2.circle(newimg, (imgpts[2][0][0], imgpts[2][0][1]), 5, (255, 0, 0), 5)
+    newimg = cv2.circle(newimg, (imgpts[3][0][0], imgpts[3][0][1]), 5, (255, 255, 0), 5)
     imga = draw(newimg,corners2,imgpts2)
 
     # mean_error = 0
