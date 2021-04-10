@@ -9,7 +9,6 @@ CHESSBOARD_DIMENSIONS = (9,6)
 CAPTURE_DEVICE = 0
 FRAME_COUNT = 0
 WAIT_PERIOD_MS = 5000
-CAMERA_ID = 'david'
 
 '''
 INTRINSIC PARAMETERS
@@ -23,6 +22,8 @@ objp = np.zeros((CHESSBOARD_DIMENSIONS[0] * CHESSBOARD_DIMENSIONS[1],3), np.floa
 
 # TODO: check if this is the correct way to adjust the sizes. Used this accordint to: https://stackoverflow.com/questions/37310210/camera-calibration-with-opencv-how-to-adjust-chessboard-square-size
 objp[:,:2] = np.mgrid[0:CHESSBOARD_DIMENSIONS[0],0:CHESSBOARD_DIMENSIONS[1]].T.reshape(-1,2) * CHESSBOARD_SQUARE_LENGTH_MM
+
+
 
 # Arrays to store object points and image points from all the images.
 objpoints = [] # 3d point in real world space
@@ -49,6 +50,13 @@ for fname in images:
 
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1],None,None)
 
+mean_error = 0
+for i in range(len(objpoints)):
+    imgpoints2, _ = cv2.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
+    error = cv2.norm(imgpoints[i],imgpoints2, cv2.NORM_L2)/len(imgpoints2)
+    mean_error += error
+
+print("total error: ", mean_error/len(objpoints))
 # print('Image Dimensions')
 # print(gray.shape)
 # print('Intrinsic Matrix')
@@ -84,20 +92,31 @@ for currentFrameNumber in count(FRAME_COUNT):
   if ret == True:
     corners2 = cv2.cornerSubPix(gray,corners,(11,11),(-1,-1),criteria)
     # Find the rotation and translation vectors.
-    ret,rvecs, tvecs, _ = cv2.solvePnPRansac(objp, corners2, mtx, dist)
+    ret, rvecs, tvecs, _ = cv2.solvePnPRansac(objp, corners2, mtx, dist)
     # ret,rvecs, tvecs = cv2.solvePnP(objp, corners2, mtx, dist)
     # project 3D points to image plane
-    imgpts, jac = cv2 .projectPoints(axis, rvecs, tvecs, mtx, dist)
-    img = draw(frame,corners2,imgpts)
-    cv2.imshow('Camera output',img)
+    imgpts2, jac = cv2 .projectPoints(axis, rvecs, tvecs, mtx, dist)
+    
+    imgpts, jact = cv2.projectPoints(np.float32([[0,0,2]]).reshape(-1,3), rvecs, tvecs, mtx, dist)
 
+    newimg = cv2.circle(frame, (imgpts[0][0][0], imgpts[0][0][1]), 5, (255, 0, 0), 5)
+    imga = draw(newimg,corners2,imgpts2)
+
+    # mean_error = 0
+    # for i in range(len(objpoints)):
+    #     imgpoints2, _ = cv2.projectPoints(objpoints[i], rvecs, tvecs, mtx, dist)
+    #     error = cv2.norm(imgpoints[i],imgpoints2, cv2.NORM_L2)/len(imgpoints2)
+    #     mean_error += error
+
+    # print("total error: ", mean_error/len(objpoints))
     k = cv2.waitKey(1)
 
     if k == ord('s'):
-        cv2.imwrite(fname[:6]+'.png', img)
-  else:
-    cv2.imshow('Camera output',frame)
-    k = cv2.waitKey(1) & 0xFF
+          cv2.imwrite(fname[:6]+'.png', imga)
+    else:
+          cv2.imshow('Camera output',imga)
+
+      # k = cv2.waitKey(1) & 0xFF
 
 print('Hey')
 cv2.destroyAllWindows()
