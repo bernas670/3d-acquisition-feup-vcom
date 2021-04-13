@@ -29,7 +29,7 @@ objp[:, [1, 0]] = objp[:, [0, 1]]
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
 
-images = glob.glob(f'data/calibration/{CAMERA_ID}/*.png')
+images = glob.glob(f'data/calibration/{CAMERA_ID}/intrinsic/*.png')
 print(f'Found {len(images)} calibration images')
 
 for fname in images:
@@ -86,8 +86,11 @@ captureDevice = cv2.VideoCapture(CAPTURE_DEVICE)
 EXTRINSIC PARAMETERS
 '''
 
-for currentFrameNumber in count(FRAME_COUNT):
-  ret, frame = captureDevice.read()
+images = glob.glob(f'data/calibration/{CAMERA_ID}/13-04-2021b/extrinsic/*.png')
+print(f'Found {len(images)} calibration images')
+
+for fname in images:              
+  frame = cv2.imread(fname)
   gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
   ret, corners = cv2.findChessboardCorners(gray, CHESSBOARD_DIMENSIONS, None)
   
@@ -99,7 +102,7 @@ for currentFrameNumber in count(FRAME_COUNT):
     # project 3D points to image plane
     imgpts2, jac = cv2 .projectPoints(axis, rvecs, tvecs, mtx, dist)
     
-    imgpts, jact = cv2.projectPoints(np.float32([[2,2,0], [-2,-2,0], [-2,0,0], [2, 2, 2]]).reshape(-1,3), rvecs, tvecs, mtx, dist)
+    imgpts, jact = cv2.projectPoints(np.float32([[2,2,0], [8,-2,0], [-2,0,0], [0, 15, 0]]).reshape(-1,3), rvecs, tvecs, mtx, dist)
 
     newimg = cv2.circle(frame, (imgpts[0][0][0], imgpts[0][0][1]), 5, (255, 0, 0), 5)
     newimg = cv2.circle(newimg, (imgpts[1][0][0], imgpts[1][0][1]), 5, (255, 0, 0), 5)
@@ -114,7 +117,7 @@ for currentFrameNumber in count(FRAME_COUNT):
     #     mean_error += error
 
     # print("total error: ", mean_error/len(objpoints))
-    k = cv2.waitKey(1)
+    k = cv2.waitKey()
 
     if k == ord('s'):
           cv2.imwrite(fname[:6]+'.png', imga)

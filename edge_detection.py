@@ -5,8 +5,8 @@ import math
 from matplotlib import pyplot as plt
 
 title_window = 'Detetar a sombra'
-data_dir = os.path.join(os.path.dirname(__file__), 'data/calibration/david/13-04-2021/shadow_flat')
-img_name = 'frame_2021-04-13 17:29:27.945642.png'
+data_dir = os.path.join(os.path.dirname(__file__), 'data/calibration/david/13-04-2021b/shadow_height')
+img_name = 'frame_2021-04-13 21:40:46.547812.png'
 low_threshold = high_threshold = 200
 aperture = 3
 dilate = 5
@@ -15,7 +15,7 @@ erode = 5
 
 img = cv.imread(os.path.join(data_dir, img_name), cv.IMREAD_GRAYSCALE)
 
-res = np.zeros_like(np.hstack((img, img, img)))
+res = np.zeros_like(np.hstack((img, img, img))) 
 final_res = np.zeros_like(img)
 
 
