@@ -5,8 +5,8 @@ import math
 from matplotlib import pyplot as plt
 
 title_window = 'Detetar a sombra'
-data_dir = os.path.join(os.path.dirname(__file__), 'data')
-img_name = 'art_shadow.png'
+data_dir = os.path.join(os.path.dirname(__file__), 'data/calibration/david/13-04-2021/shadow_flat')
+img_name = 'frame_2021-04-13 17:29:27.945642.png'
 low_threshold = high_threshold = 200
 aperture = 3
 dilate = 5
