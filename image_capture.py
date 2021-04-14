@@ -7,7 +7,7 @@ import cv2
 # Calibration parameters
 CAPTURE_DEVICE = 0
 FRAME_COUNT = 20
-WAIT_PERIOD_MS = 200
+WAIT_PERIOD_MS = 2500
 CAMERA_ID = 'david'
 IS_INSTRINSIC = False
 SESSION_ID = '14-04-2021'
