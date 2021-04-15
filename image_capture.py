@@ -7,11 +7,11 @@ import cv2
 # Calibration parameters
 CAPTURE_DEVICE = 0
 FRAME_COUNT = 20
-WAIT_PERIOD_MS = 2500
+WAIT_PERIOD_MS = 200
 CAMERA_ID = 'david'
 IS_INSTRINSIC = False
-SESSION_ID = '14-04-2021'
-TYPE = 'cube_original'
+SESSION_ID = '15-04-2021'
+TYPE = 'shadow_flat'
 PATH = path.join(path.abspath(''), 'data', 'calibration', CAMERA_ID)
 FRAME_FULL_PATH =  path.join(PATH, 'instrinsic') if IS_INSTRINSIC else path.join(PATH, SESSION_ID, TYPE) 
 captureDevice = cv2.VideoCapture(CAPTURE_DEVICE)
