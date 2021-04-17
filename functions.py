@@ -96,4 +96,11 @@ def getWhitePoint3DCoords(points, constraints, ppm):
     point = get_xyz_coords(pixel[0,0],pixel[0,1], ppm, constraints)
     res.append(point)
 
-  return res
+  return np.array(res)
+
+
+def transform(image, low_threshold, high_threshold, aperture, dilate, erode): 
+  canny = cv2.Canny(image, low_threshold, high_threshold, apertureSize=aperture)
+  dil = cv2.morphologyEx(canny, cv2.MORPH_DILATE, np.ones(dilate))
+  ero = cv2.morphologyEx(dil, cv2.MORPH_ERODE, np.ones(erode))
+  return ero

@@ -28,7 +28,6 @@ def apply():
     canny = cv.Canny(img, low_threshold, high_threshold, apertureSize=aperture)
     dil = cv.morphologyEx(canny, cv.MORPH_DILATE, np.ones((dilate, dilate)))
     ero = cv.morphologyEx(dil, cv.MORPH_ERODE, np.ones((erode, erode)))
-    res = ero[200:-1]
     final_res = ero
 
 
