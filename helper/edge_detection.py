@@ -5,7 +5,7 @@ import math
 from matplotlib import pyplot as plt
 
 title_window = 'Detetar a sombra'
-data_dir = os.path.join(os.path.dirname(__file__), 'data/calibration/david/14-04-2021/shadow_height')
+data_dir = os.path.join(os.path.dirname(__file__), '../data/calibration/david/14-04-2021/shadow_height')
 img_name = 'frame_2021-04-14 11:50:19.201038.png'
 low_threshold = high_threshold = 200
 aperture = 3
