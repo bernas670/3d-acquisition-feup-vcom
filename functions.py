@@ -88,3 +88,12 @@ def calculatePlaneCoefs(points):
   reg = RANSACRegressor(base_estimator=LinearRegression(fit_intercept=True), residual_threshold=0.01).fit(xy, z)
 
   return list(np.append(reg.estimator_.coef_,[-1, -reg.estimator_.intercept_])) 
+
+def getWhitePoint3DCoords(points, constraints, ppm):
+  res = []
+  white_pixel_coords = cv2.findNonZero(points)
+  for pixel in white_pixel_coords:
+    point = get_xyz_coords(pixel[0,0],pixel[0,1], ppm, constraints)
+    res.append(point)
+
+  return res
