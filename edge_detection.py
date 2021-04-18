@@ -5,37 +5,57 @@ import math
 from matplotlib import pyplot as plt
 
 title_window = 'Detetar a sombra'
-data_dir = os.path.join(os.path.dirname(__file__), 'data/calibration/david/14-04-2021/shadow_height')
-img_name = 'frame_2021-04-14 11:50:19.201038.png'
-low_threshold = high_threshold = 200
+low_threshold = 134
+high_threshold = 155
 aperture = 3
-dilate = 5
-erode = 5
+dilate = 10
+erode = 18
 
 
-img = cv.imread(os.path.join(data_dir, img_name), cv.IMREAD_GRAYSCALE)
+img = cv.imread(
+    'stress2.png', cv.IMREAD_GRAYSCALE)
 
-res = np.zeros_like(img) 
-final_res = np.zeros_like(img)
+canny = np.zeros_like(img)
+morph = np.zeros_like(img)
+filtered_canny = np.zeros_like(img)
+dilate_up = np.zeros_like(img)
 
 
 def display():
-    cv.imshow(title_window, res)
+    cv.imshow(title_window, canny)
+    cv.imshow('after morph', morph)
+    cv.imshow('filter canny', filtered_canny)
+    cv.imshow('dilate up', dilate_up)
 
 
 def apply():
-    global res, final_res
-    canny = cv.Canny(img, low_threshold, high_threshold, apertureSize=aperture)
+    global canny, morph, dilate_up, filtered_canny
+    start = img
+    # ret, start = cv.threshold(img, low_threshold, 255, cv.THRESH_BINARY_INV)
+
+    canny = cv.Canny(start, low_threshold, high_threshold,
+                     apertureSize=aperture)
+
     dil = cv.morphologyEx(canny, cv.MORPH_DILATE, np.ones((dilate, dilate)))
-    ero = cv.morphologyEx(dil, cv.MORPH_ERODE, np.ones((erode, erode)))
-    res = ero[200:-1]
-    final_res = ero
+    morph = cv.morphologyEx(dil, cv.MORPH_ERODE, np.ones((erode, erode)))
+
+    kernel = np.zeros((dilate + 5, dilate+5))
+    kernel[int(dilate+5/2):, :] = np.ones((dilate+5-int(dilate+5/2), dilate+5))
+    kernel = kernel.astype(np.uint8)
+    dilate_up = cv.morphologyEx(morph, cv.MORPH_DILATE, kernel)
+    #print(dilate_up[(dilate_up != 0) & (dilate_up != 255)])
+    filtered_canny = np.zeros_like(img, dtype=np.uint8)
+    filtered_canny[(dilate_up == 255) & (canny == 255)] = 255
+    #print(((dilate_up == 255) & (canny == 255)).any())
 
 
 def on_low_threshold(v):
     global low_threshold
     low_threshold = v
 
+def on_aperture(v):
+    global aperture
+    aperture = v + 1 - v%2
 
 def on_high_threshold(v):
     global high_threshold
@@ -52,8 +72,8 @@ def on_erode(v):
     erode = v
 
 
-threshold_max = 256
-morph_max = 21
+morph_max = 31
+threshold_max = 300
 
 cv.namedWindow(title_window)
 cv.createTrackbar('Low Threshold', title_window,
@@ -64,6 +84,8 @@ cv.createTrackbar('Dilate', title_window,
                   dilate, morph_max, on_dilate)
 cv.createTrackbar('Erode', title_window,
                   erode, morph_max, on_erode)
+cv.createTrackbar('Aperture', title_window,
+                  aperture, 7, on_aperture)
 
 
 while True:
@@ -74,40 +96,11 @@ while True:
         break
 
 cv.destroyAllWindows()
-cv.imwrite(os.path.join(data_dir, 'result_{}_{}_{}_{}.png'.format(
-    low_threshold, high_threshold, dilate, erode)), final_res)
+cv.imwrite('result.png', morph)
+cv.imwrite('result_new.png', filtered_canny)
 
-# src = img
-# dst = morph
+# kernel_dilate = cv.getStructuringElement(
+#     cv.MORPH_ELLIPSE, (dilate, dilate))
 
-# # Copy edges to the images that will display the results in BGR
-# cdst = cv.cvtColor(dst, cv.COLOR_GRAY2BGR)
-# cdstP = np.copy(cdst)
-
-# lines = cv.HoughLines(dst, 1, np.pi / 180, 150, None, 0, 0)
-
-# if lines is not None:
-#     for i in range(0, len(lines)):
-#         rho = lines[i][0][0]
-#         theta = lines[i][0][1]
-#         a = math.cos(theta)
-#         b = math.sin(theta)
-#         x0 = a * rho
-#         y0 = b * rho
-#         pt1 = (int(x0 + 1000*(-b)), int(y0 + 1000*(a)))
-#         pt2 = (int(x0 - 1000*(-b)), int(y0 - 1000*(a)))
-#         cv.line(cdst, pt1, pt2, (0, 0, 255), 3, cv.LINE_AA)
-
-# linesP = cv.HoughLinesP(dst, 1, np.pi / 180, 50, None, 50, 10)
-
-# if linesP is not None:
-#     for i in range(0, len(linesP)):
-#         l = linesP[i][0]
-#         cv.line(cdstP, (l[0], l[1]), (l[2], l[3]),
-#                 (0, 0, 255), 3, cv.LINE_AA)
-
-# cv.imshow("Source", src)
-# cv.imshow("Detected Lines (in red) - Standard Hough Line Transform", cdst)
-# cv.imshow("Detected Lines (in red) - Probabilistic Line Transform", cdstP)
-
-# cv.waitKey()
+# print(kernel_dilate)
+# kernel_erode = cv.getStructuringElement(cv.MORPH_ELLIPSE, (erode, erode))
