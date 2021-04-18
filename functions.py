@@ -80,12 +80,20 @@ def calculatePpmMatrix(intrinsic_matrix, rotation_vecs, translation_vecs):
 
   return perspective_projection_matrix
 
+def validateData(a, b):
+  return not(b[0] == b[1] and b[1] == b[2])
+
 def calculatePlaneCoefs(points):
   xy = points[:, :2]
   z = points[:, 2]
 
   # estimate Ax + By + D = Z (C = 1)
-  reg = RANSACRegressor(base_estimator=LinearRegression(fit_intercept=True), residual_threshold=0.01).fit(xy, z)
+  # validateData ensures that points used to estimate the plane are in different Z planes
+  # without this the algorithm was considering all points in other planes as outliers
+  reg = RANSACRegressor(base_estimator=LinearRegression(fit_intercept=True), 
+    is_data_valid=validateData,
+    residual_threshold=0.01, 
+    max_trials=1000).fit(xy, z)
 
   return list(np.append(reg.estimator_.coef_,[-1, -reg.estimator_.intercept_])) 
 
