@@ -5,8 +5,7 @@ import math
 from matplotlib import pyplot as plt
 
 title_window = 'Detetar a sombra'
-low_threshold = 134
-high_threshold = 155
+low_threshold = high_threshold = 200
 aperture = 3
 dilate = 10
 erode = 18
