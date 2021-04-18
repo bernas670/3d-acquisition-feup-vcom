@@ -21,28 +21,14 @@ def calculatePlaneCoefs(points):
   return reg.estimator_.coef_, reg.estimator_.intercept_, reg.inlier_mask_
 
 
-
-def main(argv):
-    img_name = "/home/luispcunha/repos/feup/vcom/vcom-proj1/data/2ndtry.png"
-    data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
-
-    # Loads an image
-    src = cv.imread(
-        '/home/luispcunha/repos/feup/vcom/vcom-proj1/result_new.png', cv.IMREAD_GRAYSCALE)
-
-    # Check if image is loaded fine'
-    if src is None:
-        print('Error opening image!')
-        return -1
-
-    # pronto, david, tás a ver?
+def splitTopBottomPoints(src):
     points = cv.findNonZero(src)
 
     _, _, inliers = calculatePlaneCoefs(np.reshape(points, (-1, 2)))
 
     bottom = np.zeros_like(src, dtype=np.uint8)
     for pt in points[inliers]:
-        bottom[pt[0,1], pt[0,0]] = 255
+        bottom[pt[0, 1], pt[0, 0]] = 255
 
     points_top = points[np.logical_not(inliers)]
 
@@ -50,6 +36,26 @@ def main(argv):
     top = np.zeros_like(src, dtype=np.uint8)
     for pt in points_top[inliers]:
         top[pt[0, 1], pt[0, 0]] = 255
+
+    return bottom, top
+
+
+
+def main(argv):
+    img_name = "/home/luispcunha/repos/feup/vcom/vcom-proj1/data/2ndtry.png"
+    data_dir = os.path.join(os.path.dirname(__file__), '..', 'data')
+
+    # Loads an image
+    src = cv.imread(
+        '/home/luispcunha/repos/feup/vcom/vcom-proj1/data/calibration/david/18-04-2021/elevated_plane_points/result_new.png', cv.IMREAD_GRAYSCALE)
+
+    # Check if image is loaded fine'
+    if src is None:
+        print('Error opening image!')
+        return -1
+
+    # pronto, david, tás a ver?
+    bottom, top = splitTopBottomPoints(src)
 
     cv.imshow("Source", src)
     cv.imshow("Bottom", bottom)

@@ -12,7 +12,7 @@ erode = 18
 
 
 img = cv.imread(
-    'stress2.png', cv.IMREAD_GRAYSCALE)
+    '/home/luispcunha/repos/feup/vcom/vcom-proj1/wood.png', cv.IMREAD_GRAYSCALE)
 
 canny = np.zeros_like(img)
 morph = np.zeros_like(img)
