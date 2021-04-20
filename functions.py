@@ -130,7 +130,17 @@ def transform(image, low_threshold, high_threshold, aperture, dilate, erode):
 # TODO: improve this code
 
 
-def calculateLineCoefs(points):
+def validateDataLine(intercept):
+    def validateData(model, a, b):
+        print(intercept)
+        print(model.intercept_)
+        print(abs(intercept - model.intercept_))
+        return abs(intercept - model.intercept_) > 25
+
+    return validateData
+
+
+def calculateLineCoefs(points, is_model_valid=None):
     x = points[:, :1]
     y = points[:, 1]
 
@@ -139,27 +149,35 @@ def calculateLineCoefs(points):
     # without this the algorithm was considering all points in other planes as outliers
     reg = RANSACRegressor(base_estimator=LinearRegression(fit_intercept=True),
                           # residual_threshold=0.1,
-                          # max_trials=1000
+                          is_model_valid=is_model_valid
                           ).fit(x, y)
 
     return reg.estimator_.coef_, reg.estimator_.intercept_, reg.inlier_mask_
 
-# TODO: como isto n é deterministico, as vezes n dá mt bem
-# - ideia: fazer um validate_model
+
 def splitTopBottomPoints(src):
     points = cv2.findNonZero(src)
 
-    _, _, inliers = calculateLineCoefs(np.reshape(points, (-1, 2)))
+    _, intercept_first, inliers = calculateLineCoefs(
+        np.reshape(points, (-1, 2)))
 
-    bottom = np.zeros_like(src, dtype=np.uint8)
+    first_set = np.zeros_like(src, dtype=np.uint8)
     for pt in points[inliers]:
-        bottom[pt[0, 1], pt[0, 0]] = 255
+        first_set[pt[0, 1], pt[0, 0]] = 255
 
     points_top = points[np.logical_not(inliers)]
 
-    _, _, inliers = calculateLineCoefs(np.reshape(points_top, (-1, 2)))
-    top = np.zeros_like(src, dtype=np.uint8)
+    _, intercept_second, inliers = calculateLineCoefs(np.reshape(
+        points_top, (-1, 2)), is_model_valid=validateDataLine(intercept_first))
+    second_set = np.zeros_like(src, dtype=np.uint8)
     for pt in points_top[inliers]:
-        top[pt[0, 1], pt[0, 0]] = 255
+        second_set[pt[0, 1], pt[0, 0]] = 255
+
+    if intercept_first < intercept_second:
+        top = first_set
+        bottom = second_set
+    else:
+        top = second_set
+        bottom = first_set
 
     return bottom, top

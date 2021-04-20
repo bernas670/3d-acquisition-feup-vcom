@@ -1,5 +1,6 @@
 import os
 import math
+import argparse
 import cv2 as cv
 import numpy as np
 
@@ -183,21 +184,34 @@ def on_erode(v):
 
 
 if __name__ == '__main__':
-    # Max values for the trackbars
-    morph_max = 30
-    threshold_max = 300
+    parser = argparse.ArgumentParser(description='Extract shadow points.')
+    parser.add_argument('--path', dest='img_path', type=str, help='Path to image.')
+    parser.add_argument('--auto', action='store_true',
+                        help='whether to find parameters automatically or use a trackbar to define them manually')
 
-    img_path = '/home/luispcunha/repos/feup/vcom/vcom-proj1/data/wood.png'
+    args = parser.parse_args()
+    print(args)
+    if args.img_path is None:
+        img_path = '/home/luispcunha/repos/feup/vcom/vcom-proj1/data/cube.png'
+    else:
+        img_path = args.img_path
+
     name = os.path.splitext(os.path.basename(img_path))[0]
     img = cv.imread(
         img_path, cv.IMREAD_GRAYSCALE)
 
-    best = extract_shadow_points_auto(img)
-    cv.imshow(final_window, best['result'])
-    print(best['params'])
-    cv.waitKey(0)
+    if args.auto:
+        best = extract_shadow_points_auto(img)
 
-    exit()
+        cv.imshow(final_window, best['result'])
+        print(best['params'])
+
+        cv.waitKey(0)
+        exit()
+
+    # Max values for the trackbars
+    morph_max = 30
+    threshold_max = 300
 
     cv.namedWindow(edge_detection_window)
     cv.namedWindow(morph_window)
