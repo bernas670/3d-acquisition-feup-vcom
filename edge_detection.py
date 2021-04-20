@@ -106,7 +106,6 @@ def extract_shadow_points_auto(img):
 
     # high threshold values
     for ht in range(100, 150, 5):
-        print(ht)
         # low threshold values
         for lt in range(int(0.6*ht), int(0.9*ht), 3):
             after_canny = None

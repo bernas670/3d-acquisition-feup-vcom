@@ -143,9 +143,6 @@ def getWhitePoint3DCoords(points, constraints, ppm):
 
 def validateDataLine(intercept):
     def validateData(model, a, b):
-        print(intercept)
-        print(model.intercept_)
-        print(abs(intercept - model.intercept_))
         return abs(intercept - model.intercept_) > 25
 
     return validateData
