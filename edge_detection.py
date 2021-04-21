@@ -184,7 +184,8 @@ def on_erode(v):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Extract shadow points.')
-    parser.add_argument('--path', dest='img_path', type=str, help='Path to image.')
+    parser.add_argument('--path', dest='img_path',
+                        type=str, help='Path to image.')
     parser.add_argument('--auto', action='store_true',
                         help='whether to find parameters automatically or use a trackbar to define them manually')
 
@@ -202,9 +203,30 @@ if __name__ == '__main__':
     if args.auto:
         best = extract_shadow_points_auto(img)
 
+        low_threshold = best['params']['low_threshold']
+        high_threshold = best['params']['high_threshold']
+        dilate = best['params']['dilate']
+        erode = best['params']['erode']
+        final_res = best['result']
+
+        img_canny = best['steps']['after_canny']
+        img_morph = best['steps']['after_morph']
+        img_dilated = best['steps']['after_dilate']
+        img_dilate_up = best['steps']['after_dilate_up']
+
         cv.imshow(final_window, best['result'])
         print(best['params'])
 
+        cv.imwrite('{}_final_result_{}_{}_{}_{}.png'.format(name,
+                                                            low_threshold, high_threshold, dilate, erode), final_res)
+        cv.imwrite('{}_after_canny_{}_{}_{}_{}.png'.format(name,
+                                                           low_threshold, high_threshold, dilate, erode), img_canny)
+        cv.imwrite('{}_after_dil_{}_{}_{}_{}.png'.format(name,
+                                                         low_threshold, high_threshold, dilate, erode), img_dilated)
+        cv.imwrite('{}_after_ero_{}_{}_{}_{}.png'.format(name,
+                                                         low_threshold, high_threshold, dilate, erode), img_morph)
+        cv.imwrite('{}_after_dil_up_{}_{}_{}_{}.png'.format(name,
+                                                            low_threshold, high_threshold, dilate, erode), img_dilate_up)
         cv.waitKey(0)
         exit()
 
@@ -228,15 +250,24 @@ if __name__ == '__main__':
                       erode, morph_max, on_erode)
 
     while True:
-        results = extract_shadow_points(
+        final_res, img_dilate_up, img_morph, img_dilated, img_canny = extract_shadow_points(
             img, high_threshold, low_threshold, dilate, erode)
-        display(*results)
+
+        display(final_res, img_dilate_up, img_morph, img_dilated, img_canny)
 
         key = cv.waitKey(100)
         if key == ord('q'):
             break
         elif key == ord('s'):
-            cv.imwrite('{}_result_{}_{}_{}_{}.png'.format(name,
-                                                          low_threshold, high_threshold, dilate, erode), results[0])
+            cv.imwrite('{}_final_result_{}_{}_{}_{}.png'.format(name,
+                                                                low_threshold, high_threshold, dilate, erode), final_res)
+            cv.imwrite('{}_after_canny_{}_{}_{}_{}.png'.format(name,
+                                                               low_threshold, high_threshold, dilate, erode), img_canny)
+            cv.imwrite('{}_after_dil_{}_{}_{}_{}.png'.format(name,
+                                                             low_threshold, high_threshold, dilate, erode), img_dilated)
+            cv.imwrite('{}_after_ero_{}_{}_{}_{}.png'.format(name,
+                                                             low_threshold, high_threshold, dilate, erode), img_morph)
+            cv.imwrite('{}_after_dil_up_{}_{}_{}_{}.png'.format(name,
+                                                                low_threshold, high_threshold, dilate, erode), img_dilate_up)
 
     cv.destroyAllWindows()
