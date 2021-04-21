@@ -164,21 +164,26 @@ def calculateLineCoefs(points, is_model_valid=None):
 def splitTopBottomPoints(src):
     points = cv2.findNonZero(src)
 
-    _, intercept_first, inliers = calculateLineCoefs(
-        np.reshape(points, (-1, 2)))
+    # Fit line to either the top or bottom points
+    _, intercept_first, inliers = calculateLineCoefs(np.reshape(points, (-1, 2)))
 
+    # Extract first line points
     first_set = np.zeros_like(src, dtype=np.uint8)
     for pt in points[inliers]:
         first_set[pt[0, 1], pt[0, 0]] = 255
 
     points_top = points[np.logical_not(inliers)]
 
+    # Fit line to remaining points
     _, intercept_second, inliers = calculateLineCoefs(np.reshape(
         points_top, (-1, 2)), is_model_valid=validateDataLine(intercept_first))
+
+    # Extract second line points
     second_set = np.zeros_like(src, dtype=np.uint8)
     for pt in points_top[inliers]:
         second_set[pt[0, 1], pt[0, 0]] = 255
 
+    # The bottom line will have a lower intercept than the top one
     if intercept_first < intercept_second:
         top = first_set
         bottom = second_set

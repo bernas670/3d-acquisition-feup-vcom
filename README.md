@@ -1,39 +1,40 @@
-# vcom
-Code development for the Computer Vision course @FEUP
+# 3D Acquisition - VCOM
+Code developed for the Computer Vision course @FEUP
 
+To run the experiments please use the `experiments.ipynb` notebook (alternatively you can run the `script.py` file, however, for viewing the plots we advise using the notebook version).
 
-wi = c11*x + c12*y + c13*z + c14
-wj = c21*x + c22*y + c23*z + c24
-w  = c31*x + c32*y + c33*z + c34
+The second cell contains variables that need to be configured to run the experiments:
 
-(c31*x + c32*y + c33*z + c34) * i = c11*x + c12*y + c13*z + c14
-(c31*x + c32*y + c33*z + c34) * j = c21*x + c22*y + c23*z + c24
-
-mpp
-
-ultima linha * i
-k1 = mpp[2] * i
-
-(k1) c31 * i | c32 * i | c33 * i | c34  * i
-
-ultima linha * j
-k2 = mpp[2] * j
-
-(k2) c31 * j | c32 * j | c33 * j | c34  * j
-
-k1 - primeira linha
-k3 = k1 - mpp[0]
-
-(k3) c31 * i - c11 | c32 * i - c12 | c33 * i - c13 | c34  * i - c14
-
-k2 - segunda linha
-k4 = k2 - mpp[1]
-
-(k4) c31 * j - c21 | c32 * j - c22 | c33 * j - c23 | c34  * j - c24
-
+```python
+WORKING_FOLDER = 'data/calibration/david/20-04-2021'
+INTRINSIC_PATH = 'data/calibration/david/intrinsic'
+RAW_TARGET_OBJECT_IMAGE_NAME = 'frame_2021-04-18 16:51:45.830721.png'
+RAW_CALIBRATING_OBJECT_IMAGE_NAME = 'frame_2021-04-18 16:51:45.830721.png'
+CHESSBOARD_SQUARE_LENGTH_MM = 24
+CHESSBOARD_DIMENSIONS = (9,6, CHESSBOARD_SQUARE_LENGTH_MM)
+PLANE_CALIBRATION_OBJECT_HEIGHT_MM = 50
+UNC_COMPONENTS_MASK_SIZE = 8
 ```
 
+Used libraries:
 
-a = [k3[1:3], k4[1:3]]
-b = [-k3[3],-k4[3]]
+* numpy
+* opencv
+* sklearn
+* matplotlib
+* tqdm
+
+The `edge_detection.py` and `functions.py` contain the functions used during the methodology. These functions have been commented to aid perception.
+
+The `data` folder contains an example of images that can be used in the methodology. To run it, the user should provide a folder (`WORKING_FOLDER`) with the following structure.
+
 ```
+<WORKING_DIRECTORY>/
+├─ extrinsic/
+│  ├─ ex1.png
+│  ├─ .../
+├─ <RAW_TARGET_OBJECT_IMAGE_NAME>
+├─ <RAW_CALIBRATING_OBJECT_IMAGE_NAME>
+```
+
+The `helper` folder contains several scripts that were used during the development process. We can't garantee that these files will function correctly from the get-go.

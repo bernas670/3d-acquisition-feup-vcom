@@ -3,12 +3,9 @@
 # %%
 import numpy as np
 import cv2
-import glob
-from os import path
 from functions import *
 from edge_detection import *
 from matplotlib import pyplot as plt
-from itertools import count
 
 
 # %%
@@ -22,7 +19,7 @@ PLANE_CALIBRATION_OBJECT_HEIGHT_MM = 50
 UNC_COMPONENTS_MASK_SIZE = 8
 
 # Configure plt plot sizes for notebook
-plt.rcParams['figure.figsize'] = [12, 8]
+plt.rcParams['figure.figsize'] = [6, 6]
 plt.rcParams['figure.dpi'] = 200
 
 # %% [markdown]
@@ -62,7 +59,7 @@ perspective_projection_matrix = calculatePpmMatrix(intrinsic_matrix, rotation_ve
 plane_calib_img_raw = cv2.imread(f'{WORKING_FOLDER}/{RAW_CALIBRATING_OBJECT_IMAGE_NAME}',cv2.IMREAD_GRAYSCALE)
 
 # Extract shadow points from raw image (shadow points in white)
-plane_calib_img_processed = extract_shadow_points_auto(plane_calib_img_raw)['result']
+plane_calib_img_processed, _ = extract_shadow_points_auto(plane_calib_img_raw)
 
 # Split the bottom plane shadow and the top plane shadow
 processed_base_plane_points, processed_elevated_plane_points = splitTopBottomPoints(plane_calib_img_processed)
@@ -101,10 +98,9 @@ target_object_points_raw = cv2.imread(f'{WORKING_FOLDER}/{RAW_TARGET_OBJECT_IMAG
 target_object_points_raw_gray = cv2.cvtColor(target_object_points_raw, cv2.COLOR_BGR2GRAY)
 
 # Detect shadow line
-target_object_points_processed = extract_shadow_points_auto(target_object_points_raw_gray)['result']
+target_object_points_processed, _ = extract_shadow_points_auto(target_object_points_raw_gray)
 
 # Remove unconnected components from processed image (aimed at removing some of the noise)
-target_object_points_processed = remove_unconnected_points(target_object_points_processed, UNC_COMPONENTS_MASK_SIZE)
 
 plt.title('Target object shadow/light points')
 plt.imshow(target_object_points_processed, cmap='gray')
@@ -120,19 +116,25 @@ points_z = [point[2] for point in points]
 
 
 # %%
-figure, subplots = plt.subplots(1,2)
-subplots[0].set_title('Calculated point coordinates')
+figure, subplots = plt.subplots(2)
+subplots[0].set_title('Calculated point coordinates (view from positive x)')
 subplots[0].set_xlabel('Y Coordinate')
 subplots[0].set_ylabel('Z Coordinate')
-#subplots[0].set_xlim([20,150])
-#subplots[0].set_ylim([-100,400])
+subplots[0].set_xlim([0,170])
+subplots[0].set_ylim([-10,60])
+subplots[0].set_xticks(np.arange(0, 180, 20))
+subplots[0].set_yticks(np.arange(-10, 70, 10))
 subplots[0].scatter(points_y, points_z, color='black', marker='.', linewidths=0.1)
 
-subplots[1].set_title('Calculated point coordinates')
+subplots[1].set_title('Calculated point coordinates (view from positive z)')
 subplots[1].set_xlabel('X Coordinate')
-#subplots[1].set_ylabel('Y Coordinate')
-#subplots[1].set_xlim([-150,400])
+subplots[1].set_ylabel('Y Coordinate')
+subplots[1].set_xlim([-6,6])
+subplots[1].set_ylim([0,170])
+subplots[1].set_xticks(np.arange(-6, 7, 1))
+subplots[1].set_yticks(np.arange(0, 180, 20))
 subplots[1].scatter(points_x, points_y, color='black', marker='.', linewidths=0.1)
+figure.tight_layout(pad=2)
 
 
 # %%
