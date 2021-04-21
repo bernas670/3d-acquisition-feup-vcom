@@ -37,7 +37,7 @@ def extract_shadow_points(img, high_thresh, low_thresh, dilate, erode, after_can
     #              1 1 1 1
     #
     # Applying this dilation results in the "growth" of the detected line upwards.
-    kernel_size = dilate + 2
+    kernel_size = dilate + 1
 
     # Obtain kernel
     kernel = np.zeros((kernel_size, kernel_size), dtype=np.uint8)
@@ -211,12 +211,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Extract shadow points.')
     parser.add_argument('--path', dest='img_path',
                         type=str, help='Path to image.')
-    parser.add_argument('--auto', action='store_true',
+    parser.add_argument('--auto', action='store_false',
                         help='whether to find parameters automatically or use a trackbar to define them manually')
 
     args = parser.parse_args()
     if args.img_path is None:
-        img_path = '/home/luispcunha/repos/feup/vcom/vcom-proj1/data/cube.png'
+        img_path = '/home/luispcunha/repos/feup/vcom/vcom-proj1/data/wood.png'
     else:
         img_path = args.img_path
 
@@ -240,7 +240,7 @@ if __name__ == '__main__':
         img_dilate_up = best['after_dilate_up']
 
         cv.imshow(final_window, best['result'])
-        cv.imshow('After removing unconnected', best['after_rm_unc'])
+        cv.imshow('4. After removing unconnected', best['after_rm_unc'])
 
         print(best['params'])
 
