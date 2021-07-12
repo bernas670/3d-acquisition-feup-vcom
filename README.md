@@ -2,7 +2,7 @@
 
 **2020/2021** - 4th Year, 2nd Semester
 
-**Course:** *Visão por Computador* ([VCOM](https://sigarra.up.pt/feup/en/UCURR_GERAL.FICHA_UC_VIEW?pv_ocorrencia_id=399883)) | Computer Vision
+**Course:** *Visão por Computador* ([VCOM](https://sigarra.up.pt/feup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=384980)) | Computer Vision
 **Authors:** Bernardo Santos([bernas670](https://github.com/bernas670)), David Silva ([daviddias99](https://github.com/daviddias99)), Laura Majer ([m-ajer](https://github.com/m-ajer)) Luís Cunha ([luispcunha](https://github.com/luispcunha))
 
 ---
