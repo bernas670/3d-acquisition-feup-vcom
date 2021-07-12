@@ -15,7 +15,7 @@ For more information on the specification see `docs/specification.pdf` and for a
 
 **Skills:** Camera calibration, 3D data acquisition, linear algebra, edge detection, classical computer vision, line detection, structured light, acquisition setup
 
-**Grade:** 18.5
+**Grade:** 18.5/20
 
 ---
 
